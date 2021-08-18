@@ -1,0 +1,22 @@
+name: Build
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Prolog download
+        run: | 
+          sudo apt-add-repository ppa:swi-prolog/devel -y
+          sudo apt-get update -q
+          sudo apt-get install swi-prolog-nox
+      - name: Run tests
+        run: | 
+          if [ 0 == `find *.pl | wc -l` ] ; then
+            echo "No hay archivos Prolog en tu solución"
+            exit 1
+          fi
+          find *.pl | xargs -I{} swipl -s {} -g run_tests,halt -t 'halt(1)'
